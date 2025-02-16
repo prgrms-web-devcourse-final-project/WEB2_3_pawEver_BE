@@ -35,3 +35,13 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### db ###
+**/resources/data/
+
+### api ###
+openapi3.yaml
+**/resources/static/docs/index.html
+**/src/docs/asciidoc/index.html
+
+*.env

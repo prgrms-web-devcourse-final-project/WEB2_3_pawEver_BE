@@ -2,6 +2,9 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.2'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.epages.restdocs-api-spec' version '0.18.2'
+    id "org.asciidoctor.jvm.convert" version "3.3.2"
+    id 'org.hidetake.swagger.generator' version '2.18.2'
 }
 
 group = 'com.example'
@@ -17,7 +20,9 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    asciidoctorExt
 }
+
 
 repositories {
     mavenCentral()
@@ -29,10 +34,91 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    //db
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    ///api 문서화
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.18.2'
+    testImplementation 'com.epages:restdocs-api-spec-restassured:0.18.2'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    swaggerUI 'org.webjars:swagger-ui:4.11.1'
+
+    //jwt 의존성 추가
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
+    // 테스트 의존성 추가
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {
+    delete file('build/generated-snippets')
     useJUnitPlatform()
+}
+
+tasks.register('copyDocument', Copy){
+    dependsOn tasks.named('asciidoctor')
+    delete file('src/main/resources/static/docs/index.html')
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static/docs")
+}
+
+
+openapi3 {
+    servers = [
+            { url = "http://localhost:8080" }
+    ]
+    title = 'PAWEVER API DOCUMENT'
+    description = 'pawEver api 명세서입니다.'
+    version = '0.1.0'
+    format = 'yaml'
+}
+
+
+tasks.register('copyOasToSwagger', Copy) {
+
+    // 기존 yaml 파일 삭제
+    delete 'src/main/resources/static/docs/openapi3.yaml'
+
+    // 복제할 yaml 파일 타겟팅
+    from "build/api-spec/openapi3.yaml"
+
+    // 타겟 디렉토리로 파일 복제
+    into 'src/main/resources/static/docs'
+
+    //test 먼저 실행
+    dependsOn tasks.named('test')
+
+    // openapi3 task가 먼저 실행되도록 설정
+    dependsOn tasks.named('openapi3')
+
+}
+
+
+
+tasks.withType(GenerateSwaggerUI) {
+    dependsOn 'openapi3'
+    doFirst {
+        def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.yaml")
+
+        def securitySchemesContent = "  securitySchemes:\n" + "    APIKey:\n" + "      type: apiKey\n" +  \
+                                      "      name: Autho rization\n" +  \
+                                      "      in:  header\n" + \
+                                      "security:\n" +
+                "  - APIKey : []  # Apply the security scheme here"
+
+        swaggerUIFile.append securitySchemesContent
+   }
 }

@@ -3,16 +3,8 @@ spring:
     name: pawEver
   profiles:
     active: local
-
-  jpa:
-    database-platform: org.hibernate.dialect.MariaDBDialect
-    properties:
-      hibernate:
-        format_sql: true
-    hibernate:
-      ddl-auto: update
-    show-sql: false
-
+logging:
+  config: classpath:logback-spring.xml
 springdoc:
   api-docs:
     path: /api-docs

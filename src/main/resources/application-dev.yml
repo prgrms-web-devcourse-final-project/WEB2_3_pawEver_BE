@@ -1,6 +1,22 @@
-spring:
+#spring:
+#  datasource:
+#    driver-class-name:
+    # url:
+    # username:
+    # password:
+#  jpa:
+#    database-platform:
+#    properties:
+#      hibernate:
+#        format_sql: true
+#    hibernate:
+#      ddl-auto: none
+#    show-sql: false
+temp:
+  filePath: src/main/resources/
+logging.level:
+  org.hibernate.type: info
+decorator:
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    # url: jdbc:mariadb://localhost:3306/mydb
-    # username: root
-    # password: password
+    p6spy:
+      enable-logging: true

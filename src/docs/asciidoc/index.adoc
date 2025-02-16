@@ -1,0 +1,103 @@
+:doctype: book
+:toc: left
+:icons: font
+:toclevels: 3
+:source-highlighter: highlightjs
+:sectlinks:
+
+= **GreenRoom API Document**
+
+
+== 문서
+[cols="2,4,4", options="header"]
+|===
+| Name |Url| 비고
+| Rest Docs |/docs/index.html| 기본 API 문서
+| API Test |/docs/swagger-ui.html| Swagger Api Test 문서
+| Error Code Document |/docs/error| Custom Error Code 명세
+|===
+
+== API 서버 경로
+[cols="2,4,4",options="header"]
+|===
+| 환경 | 도메인 | 비고
+| 개발(dev) | https://greenroom-server.site | API 문서 제공
+|===
+
+== 응답형식
+
+=== 공통 응답 형식
+
+[source, json]
+----
+HTTP/1.1 {HTTP STATUS CODE} {HTTP STATUS}
+Content-Type: application/json
+{
+  "isSuccess" : "성공 여부"
+  "status":  "http status" ,
+  "code":  "custom status code",
+  "data": "data"
+}
+
+----
+
+=== 성공 응답
+
+요청이 성공했을 경우 아래의 Http Status를  반환합니다.
+
+[cols="5,5,10,6", options="header"]
+|===
+| Http Status Code | Http Status | 비고 | Response Body
+| 200 | OK | 요청에 성공  | O
+| 201 | CREATED | resource 생성 | O
+| 204 | NO CONTENT |요청에 성공했으나 반환할 응답값이 없음 | X
+|===
+
+=== 응답 예시
+
+==== 1. Response Body가 없는 경우
+
+[source, json]
+----
+HTTP/1.1 204 NO CONTENT
+----
+
+==== 2. 응답 data가 없는 경우
+[source, json]
+----
+HTTP/1.1 201 CREATED
+Content-Type: application/json
+{
+  "isSuccess" : true
+  "status": "CREATED", // 예시
+  "code": "A001", //예시
+  "data": null
+}
+----
+
+==== 3. 응답 data가 있는 경우 예시
+[source, json]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+{
+  "isSuccess" : true
+  "status": "OK", //예시
+  "code": "A000", //예시
+  "data": {
+    "id": 123,
+    "name": "example"
+  }
+}
+----
+
+== 실패 응답
+
+[cols="2,4,4,4,8", options="header"]
+|===
+| 구분 |Http Status Code | Http Status  | custom error code | 비고
+| 공통 | 500 | INTERNAL_SERVER_ERROR | SERVER_0 | 처리하지 못한 서버 내부 error 발생
+| 공통 | 400 | BAD_REQUEST | REQUEST_0 | 부적절한 request argument가 전달됨
+| 공통 | 404 | NOT FOUND | USER_0 | access token에 포함된 user 정보를 서버에서 찾지 못하는 경우 공통적으로 반환됨
+|===
+
