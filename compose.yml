@@ -1,0 +1,49 @@
+networks:
+  my-net:
+    driver: bridge
+
+services:
+  spring-app:
+    image: ${DOCKER_USERNAME}/myspringapp
+    container_name: paw-backend
+    networks:
+      - my-net
+    depends_on:
+      redis-server:
+        condition: service_healthy
+    #추가
+    volumes:
+      - /home/ubuntu/compose/propertytransfer/:/app/settings/
+  redis-server:
+    image: redis
+    container_name: paw-redis
+    networks:
+      - my-net
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      retries: 10
+  nginx:
+    image: nginx:1.15-alpine
+    container_name: paw-nginx
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - my-net
+    depends_on:
+      - spring-app
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    networks:
+      - my-net
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"

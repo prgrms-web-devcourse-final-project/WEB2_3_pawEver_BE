@@ -1,0 +1,13 @@
+spring:
+  profiles:
+    active: prod
+  config:
+    import: optional:file:/app/settings/env.properties
+  data:
+    redis:
+      host: ${REDIS_HOST_NAME}
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
