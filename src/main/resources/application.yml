@@ -2,7 +2,7 @@ spring:
   application:
     name: pawEver
   profiles:
-    active: prod
+    active: dev
 logging:
   config: classpath:logback-spring.xml
 springdoc:

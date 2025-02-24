@@ -26,7 +26,7 @@ jobs:
       - name: Grant execute permission to Gradle wrapper
         run: chmod +x ./gradlew
       - name: Build and run tests
-        run: ./gradlew clean build
+        run: ./gradlew clean build -Dspring.profiles.active=test
 
   close_pr:
     runs-on: ubuntu-latest
