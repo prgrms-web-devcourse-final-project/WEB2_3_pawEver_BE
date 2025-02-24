@@ -59,7 +59,7 @@ public class AppController {
 
     @GetMapping("/")
     public String hello() {
-        return "pawEver 프로젝트 connection";
+        return "pawEver 프로젝트";
     }
 
     @GetMapping("/api/login")
