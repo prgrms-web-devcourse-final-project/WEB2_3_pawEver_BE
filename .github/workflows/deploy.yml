@@ -3,9 +3,8 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - feat/5
-#      - develop
-#      - main
+      - develop
+      - main
 
 jobs:
   deploy:

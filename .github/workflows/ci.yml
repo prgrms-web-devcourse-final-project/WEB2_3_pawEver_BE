@@ -3,9 +3,8 @@ name: CI
 on:
   pull_request:
     branches:
-      - feat/5
-#      - develop
-#      - main
+      - develop
+      - main
 
 jobs:
   # build(test포함) 진행
