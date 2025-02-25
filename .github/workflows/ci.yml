@@ -32,7 +32,7 @@ jobs:
       - name: Grant execute permission to Gradle wrapper
         run: chmod +x ./gradlew
       - name: Build and run tests
-        run: ./gradlew clean build -Dspring.config.location=classpath:/application-test.yml -Dspring.profiles.active=test
+        run: ./gradlew clean build -Dspring.profiles.active=test
       - name: 테스트 결과를 PR에 코멘트로 등록
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()

@@ -31,7 +31,7 @@ jobs:
       - name: 테스트 및 빌드하기
         run: |
           sudo chmod +x gradlew
-          ./gradlew clean build -Dspring.config.location=classpath:/application-test.yml -Dspring.profiles.active=test
+          ./gradlew clean build -Dspring.profiles.active=test
       - name: 테스트 결과를 PR에 코멘트로 등록
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
