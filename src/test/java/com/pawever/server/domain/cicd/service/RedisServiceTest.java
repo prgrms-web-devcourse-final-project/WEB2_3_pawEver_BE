@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 
 
 @SpringBootTest
-@ActiveProfiles("test")
 public class RedisServiceTest {
 
     @Autowired
