@@ -32,7 +32,7 @@ jobs:
       - name: Grant execute permission to Gradle wrapper
         run: chmod +x ./gradlew
       - name: Build and run tests
-        run: ./gradlew clean bootjar -Pprofile=dev
+        run: ./gradlew clean build -Pprofile=test
       - name: 테스트 결과를 PR에 코멘트로 등록
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
