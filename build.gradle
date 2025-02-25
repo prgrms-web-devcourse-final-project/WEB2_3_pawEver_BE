@@ -22,10 +22,6 @@ sourceSets {
     }
 }
 
-tasks.named('processResources') {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // or DuplicatesStrategy.INCLUDE
-}
-
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
@@ -62,7 +58,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
     //WebClient
-//    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework:spring-webflux'
 
 
@@ -90,6 +86,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    // redis embedded
+    implementation 'it.ozimov:embedded-redis:0.7.2'
 }
 
 tasks.named('test') {
