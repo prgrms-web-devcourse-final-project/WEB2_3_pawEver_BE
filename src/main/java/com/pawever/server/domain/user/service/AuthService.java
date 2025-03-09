@@ -1,15 +1,8 @@
 package com.pawever.server.domain.user.service;
 
-import com.pawever.server.common.exception.CustomException;
-import com.pawever.server.common.response.ResponseCodeEnum;
 import com.pawever.server.domain.user.dto.request.AuthRequestDto;
 import com.pawever.server.domain.user.dto.response.UserResponseDto;
 import com.pawever.server.domain.user.jwt.JwtUtil;
-
-import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,29 +61,19 @@ public class AuthService {
         return createHttpHeader(accessToken, refreshToken);
     }
 
-    public HttpHeaders refreshTokens(HttpServletRequest request){
+    public HttpHeaders refreshTokens(UserResponseDto userResponseDto, String refreshToken) {
 
-        // 1. request로부터 유효한 refreshToken 가져오기
-        // 쿠키나 Refresh 토큰이 없는 경우 400(BAD_REQUEST) 반환
-        // 토큰 만료시 401(UNAUTHORIZED) 반환
-        // Refresh 토큰이 아닌경우 400(BAD_REQUEST) 반환
-        // 존재하지 않는 refresh 토큰이라면 탈취된 토큰으로 간주하고 401(UNAUTHORIZED) 반환
-        String refreshToken = refreshTokenService.getValidRefreshToken(request);
-
-        // 2. Refresh토큰의 사용자 정보 추출
-        UserResponseDto userResponseDto = jwtUtil.getUserResponseDto(refreshToken);
-
-        // 3. AccessToken, RefreshToken 재발급(Refresh Rotate)
+        // 1. AccessToken, RefreshToken 재발급(Refresh Rotate)
         String accessToken = jwtUtil.createJwt("access", userResponseDto, accessTokenExpiredMs);
         String newRefreshToken = jwtUtil.createJwt("refresh", userResponseDto, refreshTokenExpiredMs);
 
-        // 4. redis에 갱신된 RefreshToken 저장
+        // 2. redis에 갱신된 RefreshToken 저장
         // 1) 기존 RefreshToken 제거
         refreshTokenService.removeRefreshToken(refreshToken);
         // 2) 새로운 RefreshToken 저장
         refreshTokenService.saveRefreshToken(newRefreshToken, userResponseDto.getName());
 
-        // 5. 컨트롤러로 반환
+        // 3. 컨트롤러로 반환
         return createHttpHeader(accessToken, newRefreshToken);
     }
 
