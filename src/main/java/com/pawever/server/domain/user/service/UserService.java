@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pawever.server.common.exception.CustomException;
 import com.pawever.server.common.response.ApiResponse;
 import com.pawever.server.common.response.ResponseCodeEnum;
-import com.pawever.server.domain.carehub.service.ShelterService;
 import com.pawever.server.domain.carehub.entity.Shelter;
 import com.pawever.server.domain.post.service.ImageService;
 import com.pawever.server.domain.user.dto.request.AuthRequestDto;
 import com.pawever.server.domain.user.dto.request.UserProfileUpdateRequestDto;
 import com.pawever.server.domain.user.dto.response.StaffProfileResponseDto;
 import com.pawever.server.domain.user.dto.response.UserProfileResponseDto;
+import com.pawever.server.domain.user.dto.response.UserProfileUpdateResponseDto;
 import com.pawever.server.domain.user.dto.response.UserResponseDto;
 import com.pawever.server.domain.user.entity.jpa.User;
 import com.pawever.server.domain.user.enums.Role;
@@ -25,6 +25,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +43,7 @@ public class UserService {
     private final ImageService imageService;
     private final UserImageService userImageService;
     private final ObjectMapper objectMapper;
+
 
     public UserResponseDto getUserInfoByUuid(String socialLoginUuid){
 
@@ -169,13 +172,23 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserProfile(UserProfileUpdateRequestDto userProfileUpdateRequestDto,
+    public UserProfileUpdateResponseDto updateUserProfile(UserProfileUpdateRequestDto userProfileUpdateRequestDto,
         MultipartFile profileImageFile,
         HttpServletRequest request){
 
-        log.info("닉네임: " + userProfileUpdateRequestDto.getName());
-        log.info("자기소개: " + userProfileUpdateRequestDto.getIntroduction());
-        log.info("프로필 이미지: " + profileImageFile.getOriginalFilename());
+        if(userProfileUpdateRequestDto!=null ){
+            log.info("닉네임: " + userProfileUpdateRequestDto.getName());
+            log.info("자기소개: " + userProfileUpdateRequestDto.getIntroduction());
+        }else{
+            log.info("userProfileUpdateRequestDto == null");
+        }
+
+        if(profileImageFile!=null){
+            log.info("프로필 이미지: " + profileImageFile.getOriginalFilename());
+        }else{
+            log.info("profileImageFile == null");
+        }
+
 
         // 1. request로부터 Uuid 추출
         String socialLoginUuid = accessTokenService.getRequestSocialLoginUuid(request);
@@ -184,12 +197,18 @@ public class UserService {
         User user = userRepository.findBySocialLoginUuid(socialLoginUuid)
             .orElseThrow(()->new CustomException(ResponseCodeEnum.USER_NOT_FOUND));
 
-        // 3. 닉네임 및 자기소개 변경
+        boolean isNicknameChanged = false;
+        if(userProfileUpdateRequestDto!=null){
+            isNicknameChanged = userProfileUpdateRequestDto.getName()!=null
+                && !userProfileUpdateRequestDto.getName().equals(user.getName());
+        }
+
+        // 3. 닉네임 및 자기소개 DB 업데이트
         if(userProfileUpdateRequestDto != null){
             user.updateUserProfile(userProfileUpdateRequestDto.getName(), userProfileUpdateRequestDto.getIntroduction());
         }
 
-        // 4. 프로필 이미지 변경
+        // 4. 프로필 이미지 DB 업데이트
         if(profileImageFile != null && !profileImageFile.isEmpty()){
             String newProfileImageUrl = imageService.uploadImageToS3(profileImageFile);
 
@@ -200,11 +219,10 @@ public class UserService {
             user.updateProfileImageUrl(newProfileImageUrl);
         }
 
-        // 5. 변경된 user 정보 저장
-//        userRepository.save(user);
-//        log.info("flush 작업 시작");
-//        userRepository.flush();
-//        log.info("flush 작업 완료");
+        return UserProfileUpdateResponseDto.builder()
+            .isNicknameChanged(isNicknameChanged)
+            .user(user)
+            .build();
     }
 
     public User findUserByUuid(String socialLoginUuid){

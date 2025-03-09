@@ -3,6 +3,7 @@ package com.pawever.server.domain.user.entity.jpa;
 import com.pawever.server.common.entity.BaseEntity;
 import com.pawever.server.domain.carehub.entity.Shelter;
 import com.pawever.server.domain.user.converter.BooleanToYNConverter;
+import com.pawever.server.domain.user.dto.response.UserResponseDto;
 import com.pawever.server.domain.user.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -104,6 +105,15 @@ public class User extends BaseEntity {
 
     public void updateUserRole(Role role){
         this.role =role;
+    }
+
+    public UserResponseDto createUserResponseDto(){
+        return UserResponseDto.builder()
+            .userId(this.userId)
+            .socialLoginUuid(this.socialLoginUuid)
+            .name(this.name)
+            .role(this.role)
+            .build();
     }
 
 }

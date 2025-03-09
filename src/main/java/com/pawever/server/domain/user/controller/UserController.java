@@ -5,14 +5,13 @@ import com.pawever.server.common.exception.CustomException;
 import com.pawever.server.common.response.ResponseCodeEnum;
 import com.pawever.server.domain.post.service.ImageService;
 import com.pawever.server.domain.user.dto.request.UserProfileUpdateRequestDto;
-import com.pawever.server.domain.user.dto.response.UserProfileResponseDto;
 import com.pawever.server.common.response.ApiResponse;
-import com.pawever.server.common.response.ResponseCodeEnum;
-import com.pawever.server.domain.reservation.service.ReservationService;
-import com.pawever.server.domain.user.dto.response.CustomUserDetails;
+import com.pawever.server.domain.user.dto.response.UserProfileUpdateResponseDto;
 import com.pawever.server.domain.user.enums.Role;
 import com.pawever.server.domain.user.jwt.JwtUtil;
 import com.pawever.server.domain.user.service.AccessTokenService;
+import com.pawever.server.domain.user.service.AuthService;
+import com.pawever.server.domain.user.service.RefreshTokenService;
 import com.pawever.server.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,6 +37,8 @@ public class UserController {
     private final UserService userService;
     private final ImageService imageService;
     private final AccessTokenService accessTokenService;
+    private final AuthService authService;
+    private final RefreshTokenService refreshTokenService;
 
     @DeleteMapping("/profiles")
     @Operation(summary = "회원 탈퇴 API")
@@ -77,8 +79,20 @@ public class UserController {
         @RequestPart(value = "profileImage", required = false) MultipartFile profileImageFile,
         HttpServletRequest request
     ) {
-        userService.updateUserProfile(userProfileUpdateRequestDto, profileImageFile, request);
+        UserProfileUpdateResponseDto userProfileUpdateResponseDto = userService.updateUserProfile(userProfileUpdateRequestDto, profileImageFile, request);
 
+        if(userProfileUpdateResponseDto.isNicknameChanged()){
+            HttpHeaders newTokenHttpHeaders = authService.refreshTokens(
+                userProfileUpdateResponseDto.getUser().createUserResponseDto(),
+                refreshTokenService.getRequestRefreshToken(request)
+            );
+
+            return ResponseEntity.ok()
+            .headers(newTokenHttpHeaders)
+            .body(ApiResponse.success(ResponseCodeEnum.SUCCESS));
+        }
+
+        // 닉네임 변경되지 않은 경우 별도로 jwt를 반환하지 않음
         return ResponseEntity
             .ok(ApiResponse.success(ResponseCodeEnum.SUCCESS));
     }
