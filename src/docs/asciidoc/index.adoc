@@ -144,6 +144,29 @@ include::build/generated-snippets/api/auth/refreshedtokens/failure-mismatch/http
 include::build/generated-snippets/api/auth/refreshedtokens/failure-stolen/http-response.adoc[]
 
 
+=== **3. 로그아웃 (DELETE /api/auth/tokens)**
+Request에 포함된 Refresh Token을 검증한뒤 로그아웃을 진행하는 API입니다. +
+
+==== Request
+include::build/generated-snippets/api/auth/logout/success/curl-request.adoc[]
+
+==== 성공 Response
+include::build/generated-snippets/api/auth/logout/success/http-response.adoc[]
+
+==== 실패 Response
+실패1. (Refresh Token 없음)
+include::build/generated-snippets/api/auth/logout/failure-null-token/http-response.adoc[]
+
+실패2. (Refresh Token 만료됨)
+include::build/generated-snippets/api/auth/logout/failure-expired/http-response.adoc[]
+
+실패3. (Access Token 전달됨)
+include::build/generated-snippets/api/auth/logout/failure-mismatch/http-response.adoc[]
+
+실패4. (서버 저장소에 없는 Refresh Token)
+include::build/generated-snippets/api/auth/logout/failure-stolen/http-response.adoc[]
+
+
 == 후원 관리
 
 === **1. 후원 요청 (api/donations)**
