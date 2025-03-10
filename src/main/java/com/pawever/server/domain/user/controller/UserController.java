@@ -84,7 +84,7 @@ public class UserController {
     }
 
     @GetMapping("/staffs")
-    @Operation(summary = "스태프 목록 조회 API")
+    @Operation(summary = "스태프 프로필 조회 API")
     public ResponseEntity<ApiResponse> getStaffProfiles(HttpServletRequest request){
         return ResponseEntity
             .ok(ApiResponse.success(ResponseCodeEnum.SUCCESS, userService.getStaffProfiles(request)));
