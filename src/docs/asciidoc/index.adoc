@@ -219,6 +219,22 @@ AccessToken(JWT) 인증 실패와 관련된 응답은 "JWT토큰 관련 실패 �
 include::build/generated-snippets/api/users/getUserProfile/fail-NullUser/http-response.adoc[]
 
 
+=== **6. 닉네임, 자기소개, 프로필사진 수정 (PATCH /api/users/profiles)**
+일반회원(USER)의 닉네임, 자기소개, 프로필사진을 수정하는 API입니다. +
+수정시 AccessToken을 통한 인증이 필요합니다 +
+
+==== Request
+include::build/generated-snippets/api/users/updateUserProfile/success/curl-request.adoc[]
+
+==== 성공 Response
+include::build/generated-snippets/api/users/updateUserProfile/success/http-response.adoc[]
+
+==== 실패 Response +
+AccessToken(JWT) 인증 실패와 관련된 응답은 "JWT토큰 관련 실패 응답"을 참고바랍니다. +
+
+실패1. (유저 정보 없음)
+include::build/generated-snippets/api/users/updateUserProfile/fail-NullUser/http-response.adoc[]
+
 
 == 후원 관리
 
