@@ -236,6 +236,25 @@ AccessToken(JWT) 인증 실패와 관련된 응답은 "JWT토큰 관련 실패 �
 include::build/generated-snippets/api/users/updateUserProfile/fail-NullUser/http-response.adoc[]
 
 
+== 관리자
+
+=== **1. 마이페이지 정보 조회 (GET /api/users/staffs)**
+보호소담당자(STAFF)의 닉네임, 메일, 프로필이미지, 보호소명, 보호소연락처, 보호소 담당자 연락처를 조회하는 API입니다. +
+조회시 AccessToken을 통한 인증이 필요합니다 +
+
+==== Request
+include::build/generated-snippets/api/users/getStaffProfile/success/curl-request.adoc[]
+
+==== 성공 Response
+include::build/generated-snippets/api/users/getStaffProfile/success/http-response.adoc[]
+
+==== 실패 Response +
+AccessToken(JWT) 인증 실패와 관련된 응답은 "JWT토큰 관련 실패 응답"을 참고바랍니다. +
+
+실패1. (스태프 정보 없음)
+include::build/generated-snippets/api/users/getStaffProfile/fail-nullstaff/http-response.adoc[]
+
+
 == 후원 관리
 
 === **1. 후원 요청 (api/donations)**
