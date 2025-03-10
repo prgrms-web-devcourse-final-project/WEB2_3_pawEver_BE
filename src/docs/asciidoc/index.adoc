@@ -102,7 +102,7 @@ Content-Type: application/json
 |===
 
 
-== 회원 관리
+== 회원
 
 === **1. 로그인 (POST /api/auth/tokens)**
 프론트에서 소셜로그인 이후 유저정보를 보내주면 로그인 및 회원가입을 진행하는 API입니다. +
@@ -165,6 +165,22 @@ include::build/generated-snippets/api/auth/logout/failure-mismatch/http-response
 
 실패4. (서버 저장소에 없는 Refresh Token)
 include::build/generated-snippets/api/auth/logout/failure-stolen/http-response.adoc[]
+
+
+=== **4. 회원탈퇴 (DELETE /api/users/profiles)**
+Request에 포함된 Refresh Token을 검증한뒤 회원탈퇴를 진행하는 API입니다. +
+로그아웃을 진행한 다음 서버에 저장된 유저 정보를 삭제합니다. +
+
+==== Request
+include::build/generated-snippets/api/users/withdraw/success/curl-request.adoc[]
+
+==== 성공 Response
+include::build/generated-snippets/api/users/withdraw/success/http-response.adoc[]
+
+==== 실패 Response +
+회원탈퇴 과정 중 로그아웃 실패와 관련된 응답은 "3. 로그아웃"을 참고바랍니다. +
+실패1. (유저 정보 없음)
+include::build/generated-snippets/api/users/withdraw/fail-NullUser/http-response.adoc[]
 
 
 == 후원 관리
