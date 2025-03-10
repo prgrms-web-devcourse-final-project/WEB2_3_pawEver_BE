@@ -11,13 +11,11 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pawever.server.PawEverApplication;
 import com.pawever.server.common.response.ResponseCodeEnum;
 import com.pawever.server.domain.user.dto.response.UserResponseDto;
@@ -51,7 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(classes = {PawEverApplication.class})
 @ActiveProfiles("test")
 @ExtendWith({RestDocumentationExtension.class})
-class CustomLogoutFilterTest {
+class CustomLogoutFilterIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -61,9 +59,6 @@ class CustomLogoutFilterTest {
 
     @Autowired
     private RefreshTokenService refreshTokenService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     private HeadersModifyingOperationPreprocessor getModifiedHeader() {
         return modifyHeaders()
