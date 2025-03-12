@@ -69,6 +69,8 @@ public enum ResponseCodeEnum {
 
     //매칭 관련 에러
     QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "QHESTION_0", "질문을 찾을 수 없습니다."),
+    ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "ANSWER_0", "답변을 찾을 수 없습니다."),
+    TRAIT_NOT_FOUND(HttpStatus.NOT_FOUND, "TRAIT_0", "특성을 찾을 수 없습니다."),
 
     //유기동물 좋아요 관련 에러
     LIKED_PET_NOT_FOUND(HttpStatus.NOT_FOUND, "LIKE_0", "유기동물 좋아요를 찾을 수 없습니다."),
